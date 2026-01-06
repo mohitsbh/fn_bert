@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector | AI-Powered Verification</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --success-dark: #065f46;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --danger-dark: #991b1b;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f9fafb;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-tertiary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --border-light: #f3f4f6;
+            --shadow-color: rgb(0 0 0 / 0.1);
+            --input-bg: #f9fafb;
+            --navbar-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --border-light: #1e293b;
+            --shadow-color: rgb(0 0 0 / 0.3);
+            --input-bg: #0f172a;
+            --navbar-bg: rgba(30, 41, 59, 0.95);
+            --success-light: #064e3b;
+            --success-dark: #6ee7b7;
+            --danger-light: #450a0a;
+            --danger-dark: #fca5a5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .navbar {
+            background: var(--navbar-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .logo-badge {
+            background: var(--primary);
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary);
+        }
+
+        .history-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .history-toggle:hover {
+            background: var(--bg-tertiary);
+            color: var(--primary);
+        }
+
+        .history-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.6rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.025em;
+        }
+
+        .hero-section p {
+            font-size: 1.125rem;
+            color: var(--text-tertiary);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 15px -3px var(--shadow-color);
+            overflow: hidden;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card-body {
+            padding: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .input-label label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            height: 180px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            resize: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            color: var(--text-primary);
+            background: var(--input-bg);
+        }
+
+        .input-group textarea:hover {
+            border-color: var(--text-muted);
+        }
+
+        .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            background: var(--bg-secondary);
+        }
+
+        .input-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Sample Examples */
+        .sample-section {
+            margin-bottom: 20px;
+        }
+
+        .sample-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sample-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sample-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .sample-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            flex: 0 0 auto;
+            padding: 14px 20px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn.loading .spinner {
+            display: block;
+        }
+
+        .btn.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result-section {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            padding: 24px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .result-card.real {
+            background: var(--success-light);
+            border: 1px solid var(--success);
+        }
+
+        .result-card.fake {
+            background: var(--danger-light);
+            border: 1px solid var(--danger);
+        }
+
+        .result-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .result-card.real .result-icon-wrapper {
+            background: var(--success);
+        }
+
+        .result-card.fake .result-icon-wrapper {
+            background: var(--danger);
+        }
+
+        .result-icon-wrapper i {
+            font-size: 24px;
+            color: white;
+        }
+
+        .result-content {
+            flex: 1;
+        }
+
+        .result-label {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .result-card.real .result-label {
+            color: var(--success-dark);
+        }
+
+        .result-card.fake .result-label {
+            color: var(--danger-dark);
+        }
+
+        .result-subtitle {
+            font-size: 0.8125rem;
+            margin-bottom: 12px;
+        }
+
+        .result-card.real .result-subtitle {
+            color: var(--success);
+        }
+
+        .result-card.fake .result-subtitle {
+            color: var(--danger);
+        }
+
+        .confidence-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 100px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 100px;
+            transition: width 0.6s ease;
+        }
+
+        .result-card.real .confidence-fill {
+            background: var(--success);
+        }
+
+        .result-card.fake .confidence-fill {
+            background: var(--danger);
+        }
+
+        .confidence-value {
+            font-weight: 700;
+            font-size: 0.875rem;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .result-card.real .confidence-value {
+            color: var(--success-dark);
+        }
+
+        .result-card.fake .confidence-value {
+            color: var(--danger-dark);
+        }
+
+        /* Result Actions */
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .result-action-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(0,0,0,0.1);
+            color: inherit;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .result-action-btn:hover {
+            background: rgba(0,0,0,0.15);
+        }
+
+        .error-message {
+            background: var(--warning-light);
+            border: 1px solid var(--warning);
+            color: #92400e;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 24px;
+            display: none;
+            font-size: 0.875rem;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .error-message.show {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        .error-message i {
+            font-size: 18px;
+            color: var(--warning);
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px var(--shadow-color);
+        }
+
+        .info-card-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: var(--primary);
+            font-size: 18px;
+        }
+
+        .info-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .info-card p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* History Panel */
+        .history-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--bg-card);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -10px 0 40px var(--shadow-color);
+            z-index: 200;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-panel.open {
+            right: 0;
+        }
+
+        .history-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .history-close:hover {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .history-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .history-empty i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .history-item {
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .history-item:hover {
+            border-color: var(--primary);
+        }
+
+        .history-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .history-item-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .history-item-badge.real {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .history-item-badge.fake {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .history-item-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .history-item-text {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-item-confidence {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .history-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .history-clear-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--danger);
+            background: transparent;
+            color: var(--danger);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .history-clear-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer p {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .footer i {
+            color: var(--text-muted);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 300;
+            opacity: 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            color: var(--success);
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                padding: 24px 16px;
+            }
+
+            .hero-section h1 {
+                font-size: 1.75rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .btn-row {
+                flex-direction: column;
+            }
+
+            .btn-secondary {
+                flex: 1;
+            }
+
+            .history-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .sample-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay" onclick="toggleHistory()"></div>
+    
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <span class="logo-text">NewsVerify</span>
+                </a>
+                <span class="logo-badge">AI</span>
+            </div>
+            <div class="navbar-right">
+                <button class="history-toggle" onclick="toggleHistory()" title="View History">
+                    <i class="fas fa-history"></i>
+                    <span class="history-badge" id="historyBadge" style="display: none;">0</span>
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- History Panel -->
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">
+            <h3><i class="fas fa-history"></i> Analysis History</h3>
+            <button class="history-close" onclick="toggleHistory()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="history-content" id="historyContent">
+            <div class="history-empty">
+                <i class="fas fa-inbox"></i>
+                <p>No history yet</p>
+            </div>
+        </div>
+        <div class="history-footer">
+            <button class="history-clear-btn" onclick="clearHistory()">
+                <i class="fas fa-trash"></i> Clear All History
+            </button>
+        </div>
+    </div>
+
+    <main class="main-container">
+        <div class="hero-section">
+            <h1>Detect Fake News Instantly</h1>
+            <p>Our AI-powered tool analyzes news content to help you identify potentially misleading information.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="input-group">
+                    <div class="input-label">
+                        <label for="newsText">News Content</label>
+                        <span class="char-count" id="charCount">0 characters</span>
+                    </div>
+                    <div class="textarea-wrapper">
+                        <textarea 
+                            id="newsText" 
+                            placeholder="Paste the news article, headline, or any text you'd like to verify..."
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="sample-section">
+                    <div class="sample-label">
+                        <i class="fas fa-lightbulb"></i> Try a sample:
+                    </div>
+                    <div class="sample-buttons">
+                        <button class="sample-btn" onclick="loadSample('real1')">Real News Example</button>
+                        <button class="sample-btn" onclick="loadSample('fake1')">Fake News Example</button>
+                        <button class="sample-btn" onclick="loadSample('headline')">News Headline</button>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="clearText()" title="Clear text">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="btn btn-primary" id="analyzeBtn" onclick="analyzeNews()">
+                        <span class="spinner"></span>
+                        <span class="btn-text"><i class="fas fa-magnifying-glass-chart"></i> Analyze Content</span>
+                    </button>
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText"></span>
+                </div>
+
+                <div class="result-section" id="resultSection">
+                    <div class="result-card" id="resultCard">
+                        <div class="result-icon-wrapper">
+                            <i id="resultIcon"></i>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-label" id="resultLabel"></div>
+                            <div class="result-subtitle" id="resultSubtitle"></div>
+                            <div class="confidence-container">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" id="confidenceFill"></div>
+                                </div>
+                                <span class="confidence-value" id="confidenceText"></span>
+                            </div>
+                            <div class="result-actions">
+                                <button class="result-action-btn" onclick="copyResult()">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="result-action-btn" onclick="shareResult()">
+                                    <i class="fas fa-share-alt"></i> Share
+                                </button>
+                                <button class="result-action-btn" onclick="analyzeAgain()">
+                                    <i class="fas fa-redo"></i> New Analysis
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-section" id="statsSection">
+            <div class="stat-item">
+                <div class="stat-value" id="totalAnalyzed">0</div>
+                <div class="stat-label">Analyzed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="realCount">0</div>
+                <div class="stat-label">Real News</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="fakeCount">0</div>
+                <div class="stat-label">Fake News</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="avgConfidence">0%</div>
+                <div class="stat-label">Avg Confidence</div>
+            </div>
+        </div>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <div class="info-card-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4>BERT AI Model</h4>
+                <p>Powered by state-of-the-art NLP</p>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h4>Instant Analysis</h4>
+                <p>Get results in seconds</p>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <h4>Privacy First</h4>
+                <p>Data stored locally only</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-info-circle"></i> AI predictions are not 100% accurate. Always verify with trusted sources.</p>
+        </div>
+    </main>
+
+    <script>
+        // Sample news data
+        const samples = {
+            real1: "Scientists at NASA have successfully launched the James Webb Space Telescope, marking a new era in space exploration. The telescope, which took over 20 years to develop, will help astronomers observe distant galaxies and study the early universe.",
+            fake1: "BREAKING: Scientists discover that drinking coffee makes you immortal! A new study shows that people who drink 10 cups of coffee a day will never die. Doctors are shocked!",
+            headline: "Global leaders meet at UN Climate Summit to discuss carbon emission targets for 2030"
+        };
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon();
+
+        // Initialize history and stats
+        let history = JSON.parse(localStorage.getItem('newsHistory')) || [];
+        updateHistoryUI();
+        updateStats();
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const btn = document.getElementById('themeToggle');
+            const theme = document.documentElement.getAttribute('data-theme');
+            btn.innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        }
+
+        // History functions
+        function toggleHistory() {
+            const panel = document.getElementById('historyPanel');
+            const overlay = document.getElementById('overlay');
+            panel.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        function addToHistory(text, result) {
+            const item = {
+                id: Date.now(),
+                text: text.substring(0, 200),
+                prediction: result.prediction,
+                confidence: result.confidence,
+                is_fake: result.is_fake,
+                timestamp: new Date().toISOString()
+            };
+            history.unshift(item);
+            if (history.length > 50) history.pop(); // Keep last 50
+            localStorage.setItem('newsHistory', JSON.stringify(history));
+            updateHistoryUI();
+            updateStats();
+        }
+
+        function updateHistoryUI() {
+            const container = document.getElementById('historyContent');
+            const badge = document.getElementById('historyBadge');
+            
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="history-empty">
+                        <i class="fas fa-inbox"></i>
+                        <p>No history yet</p>
+                    </div>
+                `;
+                badge.style.display = 'none';
+            } else {
+                badge.style.display = 'flex';
+                badge.textContent = history.length;
+                container.innerHTML = history.map(item => `
+                    <div class="history-item" onclick="loadFromHistory('${item.id}')">
+                        <div class="history-item-header">
+                            <span class="history-item-badge ${item.is_fake ? 'fake' : 'real'}">
+                                ${item.prediction}
+                            </span>
+                            <span class="history-item-time">${formatTime(item.timestamp)}</span>
+                        </div>
+                        <div class="history-item-text">${escapeHtml(item.text)}</div>
+                        <div class="history-item-confidence">Confidence: ${item.confidence}%</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadFromHistory(id) {
+            const item = history.find(h => h.id === parseInt(id));
+            if (item) {
+                document.getElementById('newsText').value = item.text;
+                updateCharCount();
+                toggleHistory();
+            }
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                history = [];
+                localStorage.removeItem('newsHistory');
+                updateHistoryUI();
+                updateStats();
+                showToast('History cleared');
+            }
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            return date.toLocaleDateString();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Stats
+        function updateStats() {
+            const total = history.length;
+            const real = history.filter(h => !h.is_fake).length;
+            const fake = history.filter(h => h.is_fake).length;
+            const avgConf = total > 0 
+                ? Math.round(history.reduce((sum, h) => sum + h.confidence, 0) / total)
+                : 0;
+            
+            document.getElementById('totalAnalyzed').textContent = total;
+            document.getElementById('realCount').textContent = real;
+            document.getElementById('fakeCount').textContent = fake;
+            document.getElementById('avgConfidence').textContent = avgConf + '%';
+        }
+
+        // Sample loading
+        function loadSample(type) {
+            document.getElementById('newsText').value = samples[type];
+            updateCharCount();
+        }
+
+        // Character count
+        const textArea = document.getElementById('newsText');
+        const charCount = document.getElementById('charCount');
+        
+        textArea.addEventListener('input', updateCharCount);
+
+        function updateCharCount() {
+            const count = textArea.value.length;
+            charCount.textContent = count.toLocaleString() + ' character' + (count !== 1 ? 's' : '');
+        }
+
+        function clearText() {
+            textArea.value = '';
+            charCount.textContent = '0 characters';
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+            textArea.focus();
+        }
+
+        // Store last result for sharing/copying
+        let lastResult = null;
+        let lastText = '';
+
+        async function analyzeNews() {
+            const btn = document.getElementById('analyzeBtn');
+            const resultSection = document.getElementById('resultSection');
+            const resultCard = document.getElementById('resultCard');
+            const resultIcon = document.getElementById('resultIcon');
+            const resultLabel = document.getElementById('resultLabel');
+            const resultSubtitle = document.getElementById('resultSubtitle');
+            const confidenceFill = document.getElementById('confidenceFill');
+            const confidenceText = document.getElementById('confidenceText');
+            const errorMessage = document.getElementById('errorMessage');
+
+            const text = textArea.value.trim();
+            lastText = text;
+
+            // Hide previous results and errors
+            resultSection.classList.remove('show');
+            errorMessage.classList.remove('show');
+
+            if (!text) {
+                showError('Please enter some text to analyze.');
+                return;
+            }
+
+            // Show loading state
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                lastResult = data;
+
+                // Add to history
+                addToHistory(text, data);
+
+                // Update result card
+                resultCard.className = 'result-card ' + (data.is_fake ? 'fake' : 'real');
+                resultIcon.className = data.is_fake ? 'fas fa-times' : 'fas fa-check';
+                resultLabel.textContent = data.prediction;
+                resultSubtitle.textContent = data.is_fake 
+                    ? 'This content appears to be misleading or false.'
+                    : 'This content appears to be legitimate.';
+                confidenceFill.style.width = data.confidence + '%';
+                confidenceText.textContent = data.confidence + '%';
+
+                // Show result
+                resultSection.classList.add('show');
+
+            } catch (error) {
+                showError('Failed to connect to the server. Please try again.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            document.getElementById('errorText').textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        // Result actions
+        function copyResult() {
+            if (!lastResult) return;
+            const text = `News Analysis Result:\n${lastResult.prediction} (${lastResult.confidence}% confidence)\n\nAnalyzed text:\n"${lastText.substring(0, 100)}..."`;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Result copied to clipboard!');
+            });
+        }
+
+        function shareResult() {
+            if (!lastResult) return;
+            const text = `I analyzed this news with NewsVerify AI:\n\nResult: ${lastResult.prediction} (${lastResult.confidence}% confidence)\n\nTry it yourself!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'News Verification Result',
+                    text: text
+                });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Share text copied to clipboard!');
+                });
+            }
+        }
+
+        function analyzeAgain() {
+            clearText();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Allow Ctrl+Enter to analyze
+        textArea.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                analyzeNews();
+            }
+        });
+    </script>
+</body>
+</html>
